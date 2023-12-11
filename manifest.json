@@ -1,0 +1,10 @@
+{
+	"id": "quote-styler",
+	"name": "Quote Styler",
+	"version": "0.1.0",
+	"minAppVersion": "0.15.0",
+	"description": "Styles text in quotation marks to help it stand out.",
+	"author": "Thomas Young",
+	"authorUrl": "https://github.com/DrakeRichards",
+	"isDesktopOnly": false
+}
