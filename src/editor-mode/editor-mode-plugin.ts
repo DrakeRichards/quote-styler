@@ -11,7 +11,7 @@ const quoteMatcher = new MatchDecorator({
 	regexp: /"([^"]*)"/g,
 	decoration: Decoration.mark({
 		attributes: {
-			class: "HyperMD-codeblock token string",
+			class: "token string",
 		},
 	}),
 });
@@ -21,13 +21,11 @@ export const quotePlugin = ViewPlugin.fromClass(
 		quotedText: DecorationSet;
 
 		constructor(view: EditorView) {
-			console.log("Loaded quote plugin");
 			this.quotedText = quoteMatcher.createDeco(view);
 		}
 
 		update(update: ViewUpdate) {
 			this.quotedText = quoteMatcher.updateDeco(update, this.quotedText);
-			//console.log(this.quotedText);
 		}
 	},
 	{
