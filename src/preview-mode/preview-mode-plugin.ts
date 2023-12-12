@@ -1,23 +1,41 @@
 import { MarkdownPostProcessor, MarkdownPostProcessorContext } from 'obsidian';
 
 export const quotePostProcessor: MarkdownPostProcessor = function (el: Node, ctx: MarkdownPostProcessorContext) {
-	if (isBodyText(el)) {
-		const htmlElement = el as HTMLElement;
-		const regex = /"([^"]*)"/g;
-		console.log(htmlElement.innerHTML);
-		htmlElement.innerHTML = htmlElement.innerHTML.replace(regex, '<span class="token string">"$1"</span>');
+	const htmlElement = el as HTMLElement;
+	if (isBodyText(htmlElement)) {
+		processElement(el as HTMLElement);
 	}
 };
 
-function isBodyText(el: Node): el is HTMLElement {
+function isBodyText(el: HTMLElement): boolean {
+	const paragraphs = el.getElementsByTagName('p');
+	
 	if (
-		el instanceof HTMLElement &&
-		el.nodeType === el.ELEMENT_NODE
+		el.nodeType === el.ELEMENT_NODE &&
+		paragraphs.length === 1 &&
+		el.children.length === 1 &&
+		el.children[0] === paragraphs[0]
 	) {
-		// Check if the element contains only a single <p> tag and no other child elements
-		const paragraphs = el.getElementsByTagName('p');
-		return paragraphs.length === 1 && el.children.length === 1 && el.children[0] === paragraphs[0];
+		return true;
 	}
 
 	return false;
+}
+
+function processElement(el: HTMLElement) {
+	const paragraphs = el.getElementsByTagName('p');
+	if (paragraphs.length === 1) {
+		const paragraph = paragraphs[0];
+		replaceTextContent(paragraph);
+	}
+}
+
+function replaceTextContent(node: Node) {
+	if (node.nodeType === node.TEXT_NODE && node.nodeValue !== null) {
+		const regex = /"([^"]*)"/g;
+		node.nodeValue = node.nodeValue.replace(regex, '"$1"');
+	} else {
+		// Recursively process child nodes
+		node.childNodes.forEach(replaceTextContent);
+	}
 }
