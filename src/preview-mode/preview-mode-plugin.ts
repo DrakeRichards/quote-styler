@@ -2,9 +2,10 @@ import { MarkdownPostProcessor, MarkdownPostProcessorContext } from 'obsidian';
 
 export const quotePostProcessor: MarkdownPostProcessor = function (el: Node, ctx: MarkdownPostProcessorContext) {
 	const htmlElement = el as HTMLElement;
-	// If the top-level element is a span, that means the block is probably
-	// a DataView query and should be skipped entirely.
-	if (!isSpan(htmlElement)) {
+	if (
+		!isDataViewQuery(htmlElement)
+		&& !isBlockQuote(htmlElement)
+	) {
 		replaceTextContent(htmlElement);
 	}
 };
@@ -39,8 +40,14 @@ function isParentAllowed(element: HTMLElement): boolean {
 	return allowedParentNodeNames.includes(element.parentNode.nodeName);
 }
 
-function isSpan(element: HTMLElement) {
+function isDataViewQuery(element: HTMLElement) {
+	// If the top-level element is a span, that means the block is probably
+	// a DataView query and should be skipped entirely.
 	return element.nodeName === 'SPAN'
+}
+
+function isBlockQuote(element: HTMLElement) {
+	return element.firstChild?.nodeName === 'BLOCKQUOTE';
 }
 
 function findQuoteMatches(element: HTMLElement): RegExpMatchArray[] {
